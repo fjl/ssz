@@ -84,9 +84,7 @@ func (v ExecutionPayloadReader) ExtraData() ssz.DynamicBytesReader {
 
 // ...
 
-func (v ExecutionPayloadReader) Transactions() ssz.VectorReader[ssz.DynamicBytesReader] {
-	r := ssz.VectorReader[ssz.DynamicBytesReader]{
-		Prototype: ssz.DynamicBytesReader{},
-	}
+func (v ExecutionPayloadReader) Transactions() ssz.ListReader[ssz.DynamicBytesReader] {
+	r := ssz.ListReader[ssz.DynamicBytesReader]{}
 	return r.InitReaderSSZ(v.pos.Add(495))
 }

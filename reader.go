@@ -95,19 +95,19 @@ func (r DynamicBytesReader) Read(src *ReaderSource, v []byte) {
 	copy(v, src.payload[start:end])
 }
 
-type VectorReader[Item Reader[Item]] struct {
+type ListReader[Item Reader[Item]] struct {
 	Prototype Item
 	pos       ReadPos
 }
 
-func (r VectorReader[Item]) InitReaderSSZ(pos ReadPos) VectorReader[Item] {
-	return VectorReader[Item]{
+func (r ListReader[Item]) InitReaderSSZ(pos ReadPos) ListReader[Item] {
+	return ListReader[Item]{
 		Prototype: r.Prototype,
 		pos:       pos,
 	}
 }
 
-func (r VectorReader[Item]) Item(src *ReaderSource, n int) Item {
+func (r ListReader[Item]) Item(src *ReaderSource, n int) Item {
 	// Get the size of the container.
 	start := src.offset(r.pos.Offset)
 	end := src.objectEnd(r.pos)
@@ -139,13 +139,13 @@ func (r VectorReader[Item]) Item(src *ReaderSource, n int) Item {
 	return r.Prototype.InitReaderSSZ(pos)
 }
 
-func (r VectorReader[Item]) Len(src *ReaderSource) int {
+func (r ListReader[Item]) Len(src *ReaderSource) int {
 	start := src.offset(r.pos.Offset)
 	end := src.objectEnd(r.pos)
 	return int((end - start) / r.ItemSize())
 }
 
-func (r VectorReader[Item]) ItemSize() uint32 {
+func (r ListReader[Item]) ItemSize() uint32 {
 	switch vs := any(r.Prototype).(type) {
 	case StaticReader:
 		return vs.SizeSSZ()
